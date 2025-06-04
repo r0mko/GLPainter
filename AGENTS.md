@@ -8,5 +8,7 @@ Guidelines for contributions:
   - `lib/` contains libraries and QML plugins.
   - `bin/` contains executables.
   - `test/` contains tests written with GoogleTest.
+- **Merge strategy:** Always squash commits when merging pull requests so the repository history
+  shows only one commit per change.
 
 Follow these instructions unless overridden by a more specific AGENTS.md deeper in the directory tree.
