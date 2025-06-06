@@ -70,7 +70,7 @@ DFCache::GlyphIndices DFCache::addGlyph(const Key &key,
     QRhiTextureUploadDescription desc(entry);
     updates->uploadTexture(atlas.texture, desc);
 
-    GlyphIndices gi{m_atlases.size() - 1, indexInAtlas};
+    GlyphIndices gi{static_cast<int>(m_atlases.size()) - 1, indexInAtlas};
     m_cache.insert(key, gi);
     return gi;
 }
