@@ -6,8 +6,10 @@ qt_add_library(TextViewLib STATIC
 target_sources(TextViewLib
     PRIVATE
         TextView.cpp
+        TextFrameBuffer.cpp
     PUBLIC
         TextView.h
+        TextFrameBuffer.h
 )
 
 target_link_libraries(TextViewLib
