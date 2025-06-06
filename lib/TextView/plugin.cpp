@@ -7,5 +7,3 @@ void UiEditorsPlugin::registerTypes(const char *uri)
     Q_ASSERT(QLatin1String(uri) == QLatin1String("UI.Editors"));
     qmlRegisterType<TextView>(uri, 1, 0, "TextView");
 }
-
-#include "plugin.moc"

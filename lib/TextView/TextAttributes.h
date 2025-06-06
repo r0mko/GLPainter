@@ -27,5 +27,5 @@ public:
 
 private:
     const Data *m_data = nullptr;
-    static const Data *insert(const Data &data);
+    static const Data *get(const Data &data);
 };

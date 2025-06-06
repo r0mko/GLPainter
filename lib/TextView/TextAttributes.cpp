@@ -1,6 +1,9 @@
 #include "TextAttributes.h"
-
+#include "qglobal.h"
 #include <QHash>
+
+using TextAttribteStorage = QHash<size_t, const TextAttributes::Data *>;
+Q_GLOBAL_STATIC(TextAttribteStorage, textAttributesStore)
 
 namespace {
 
@@ -14,12 +17,6 @@ static size_t computeHash(const TextAttributes::Data &d)
     return h;
 }
 
-static QHash<size_t, const TextAttributes::Data *> &store()
-{
-    static QHash<size_t, const TextAttributes::Data *> s;
-    return s;
-}
-
 } // namespace
 
 TextAttributes::TextAttributes() = default;
@@ -31,7 +28,7 @@ TextAttributes::TextAttributes(const QColor &background,
                                FontLoader *font)
 {
     Data d{background, color, outlineColor, outlineWidth, font};
-    m_data = insert(d);
+    m_data = get(d);
 }
 
 bool TextAttributes::isValid() const
@@ -44,13 +41,12 @@ const TextAttributes::Data &TextAttributes::data() const
     return *m_data;
 }
 
-const TextAttributes::Data *TextAttributes::insert(const Data &d)
+const TextAttributes::Data *TextAttributes::get(const Data &d)
 {
     auto h = computeHash(d);
-    auto &s = store();
-    if (s.contains(h))
-        return s.value(h);
+    if (textAttributesStore->contains(h))
+        return textAttributesStore->value(h);
     auto *ptr = new Data(d);
-    s.insert(h, ptr);
+    textAttributesStore->insert(h, ptr);
     return ptr;
 }
