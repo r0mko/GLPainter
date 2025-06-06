@@ -7,16 +7,7 @@
 #include <QPoint>
 #include <QString>
 
-class FontLoader;
-
-struct TextAttributes
-{
-    QColor background;
-    QColor color;
-    QColor outlineColor;
-    float outlineWidth = 0.0f;
-    FontLoader *font = nullptr;
-};
+#include "TextAttributes.h"
 
 struct TextElement
 {

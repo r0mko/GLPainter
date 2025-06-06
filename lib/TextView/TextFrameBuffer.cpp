@@ -171,7 +171,8 @@ QVector<RenderCell> TextFrameBuffer::collect(const QRect &region) const
                 const TextElement *el = m_lines[y].elementAt(i);
                 if (!el)
                     continue;
-                cells.append({el->character, QPoint(i, y), el->attributes});
+                if (el->attributes.isValid())
+                    cells.append({el->character, QPoint(i, y), el->attributes});
             }
         }
     }
