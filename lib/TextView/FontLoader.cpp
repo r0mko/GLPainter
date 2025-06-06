@@ -1,4 +1,4 @@
-#include "fontloader.h"
+#include "FontLoader.h"
 
 FontLoader::FontLoader() {}
 
