@@ -6,6 +6,8 @@
 #include <QChar>
 #include <QPoint>
 #include <QString>
+#include <QObject>
+#include <QtQml/qqml.h>
 
 #include "TextAttributes.h"
 
@@ -17,6 +19,7 @@ struct TextElement
 
 class TextBlock
 {
+    Q_GADGET
 public:
     TextBlock(int position = 0);
 
@@ -35,6 +38,7 @@ private:
 
 class TextLine
 {
+    Q_GADGET
 public:
     void addBlock(const TextBlock &block);
     void clear();
@@ -60,10 +64,12 @@ struct RenderCell
     TextAttributes attributes;
 };
 
-class TextFrameBuffer
+class TextFramebuffer : public QObject
 {
+    Q_OBJECT
+    QML_ELEMENT
 public:
-    TextFrameBuffer();
+    explicit TextFramebuffer(QObject *parent = nullptr);
 
     void putText(int row, int column, const QString &text, const TextAttributes &attr);
     void writeLn(const QString &text, const TextAttributes &attr);
@@ -74,6 +80,11 @@ public:
 
     const QVector<TextLine> &lines() const;
     QVector<TextLine> &lines();
+
+signals:
+    void changed(int pos, int count);
+    void linesAdded(int pos, int count);
+    void linesRemoved(int pos, int count);
 
 private:
     QVector<TextLine> m_lines;

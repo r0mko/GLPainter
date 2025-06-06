@@ -4,12 +4,12 @@ qt_add_library(TextViewLib
     SHARED
     FontLoader.h
     TextView.h
-    TextFrameBuffer.h
+    TextFramebuffer.h
     DFCache.h
     DFGlyph.h
     FontLoader.cpp
     TextView.cpp
-    TextFrameBuffer.cpp
+    TextFramebuffer.cpp
     DFCache.cpp
     DFGlyph.cpp
     TextAttributes.cpp
