@@ -12,12 +12,3 @@ Guidelines for contributions:
   shows only one commit per change.
 
 Follow these instructions unless overridden by a more specific AGENTS.md deeper in the directory tree.
-
-Before running any task, run the environment setup script:
-```bash
-apt update && apt install -y libgl1-mesa-dev
-pip install aqtinstall
-aqt install-qt linux desktop 6.9.1 -O /workspace/qt
-export PATH=/workspace/qt/6.9.1/gcc_64/bin:$PATH
-export CMAKE_PREFIX_PATH=/workspace/qt/6.9.1/gcc_64
-```
