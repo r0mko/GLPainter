@@ -1,6 +1,7 @@
 find_package(Qt6 REQUIRED COMPONENTS Quick Qml)
 
-qt_add_library(TextViewLib STATIC)
+qt_add_library(TextViewLib STATIC
+    FontLoader.h FontLoader.cpp)
 
 target_sources(TextViewLib
     PRIVATE
