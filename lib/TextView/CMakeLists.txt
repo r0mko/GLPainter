@@ -5,10 +5,12 @@ qt_add_library(TextViewLib
     FontLoader.h
     TextView.h
     TextFrameBuffer.h
+    DFCache.h
     DFGlyph.h
     FontLoader.cpp
     TextView.cpp
     TextFrameBuffer.cpp
+    DFCache.cpp
     DFGlyph.cpp
     TextAttributes.cpp
     TextAttributes.h
