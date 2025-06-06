@@ -1,6 +1,6 @@
 #include "DFCache.h"
 #include "FontLoader.h"
-#include <QRhi>
+#include <QtGui/6.9.1/QtGui/rhi/qrhi.h>
 #include <QDebug>
 #include <QImage>
 
@@ -12,8 +12,7 @@ DFCache::DFCache(int cellsPerAtlas)
 DFCache::~DFCache()
 {
     for (auto &a : m_atlases) {
-        if (a.texture)
-            a.texture->release();
+        delete a.texture;
     }
 }
 
@@ -55,8 +54,7 @@ DFCache::GlyphIndices DFCache::addGlyph(const Key &key,
     if (m_atlases.isEmpty() || m_atlases.last().next >= m_cellsPerAtlas) {
         Atlas a;
         QSize size(img.width() * m_cellsPerAtlas, img.height());
-        a.texture = rhi->newTexture(QRhiTexture::R8, size, 1,
-                                    QRhiTexture::UsedAsTransferDst | QRhiTexture::UsedAsSampled);
+        a.texture = rhi->newTexture(QRhiTexture::R8, size, 1);
         if (!a.texture->create()) {
             qWarning() << "Failed to create atlas texture";
         }
