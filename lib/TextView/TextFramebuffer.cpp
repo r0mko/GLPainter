@@ -1,4 +1,4 @@
-#include "TextFrameBuffer.h"
+#include "TextFramebuffer.h"
 
 #include <algorithm>
 
@@ -81,34 +81,42 @@ QVector<TextBlock> &TextLine::blocks()
     return m_blocks;
 }
 
-TextFrameBuffer::TextFrameBuffer() = default;
+TextFramebuffer::TextFramebuffer(QObject *parent)
+    : QObject(parent)
+{
+}
 
-void TextFrameBuffer::putText(int row, int column, const QString &text, const TextAttributes &attr)
+void TextFramebuffer::putText(int row, int column, const QString &text, const TextAttributes &attr)
 {
     if (row < 0 || column < 0)
         return;
-    if (m_lines.size() <= row)
+    int oldSize = m_lines.size();
+    if (m_lines.size() <= row) {
         m_lines.resize(row + 1);
+        emit linesAdded(oldSize, m_lines.size() - oldSize);
+    }
     TextBlock block(column);
     block.elements().reserve(text.size());
     for (QChar ch : text) {
         block.elements().append({ch, attr});
     }
     m_lines[row].addBlock(block);
+    emit changed(row, 1);
 }
 
-void TextFrameBuffer::writeLn(const QString &text, const TextAttributes &attr)
+void TextFramebuffer::writeLn(const QString &text, const TextAttributes &attr)
 {
     putText(m_lines.size(), 0, text, attr);
 }
 
-void TextFrameBuffer::clear(const QRect &rect)
+void TextFramebuffer::clear(const QRect &rect)
 {
     for (int y = rect.top(); y <= rect.bottom() && y < m_lines.size(); ++y) {
         if (y < 0)
             continue;
         if (rect.left() == 0 && rect.right() >= m_lines[y].lastIndex()) {
             m_lines[y].clear();
+            emit changed(y, 1);
             continue;
         }
         // partial clear
@@ -143,22 +151,21 @@ void TextFrameBuffer::clear(const QRect &rect)
         m_lines[y].clear();
         for (const TextBlock &b : newBlocks)
             m_lines[y].addBlock(b);
+        emit changed(y, 1);
     }
 }
 
-void TextFrameBuffer::fill(const QRect &rect, QChar ch, const TextAttributes &attr)
+void TextFramebuffer::fill(const QRect &rect, QChar ch, const TextAttributes &attr)
 {
     for (int y = rect.top(); y <= rect.bottom(); ++y) {
         if (y < 0)
             continue;
-        if (m_lines.size() <= y)
-            m_lines.resize(y + 1);
         QString str(rect.width(), ch);
         putText(y, rect.left(), str, attr);
     }
 }
 
-QVector<RenderCell> TextFrameBuffer::collect(const QRect &region) const
+QVector<RenderCell> TextFramebuffer::collect(const QRect &region) const
 {
     QVector<RenderCell> cells;
     for (int y = region.top(); y <= region.bottom() && y < m_lines.size(); ++y) {
@@ -179,12 +186,12 @@ QVector<RenderCell> TextFrameBuffer::collect(const QRect &region) const
     return cells;
 }
 
-const QVector<TextLine> &TextFrameBuffer::lines() const
+const QVector<TextLine> &TextFramebuffer::lines() const
 {
     return m_lines;
 }
 
-QVector<TextLine> &TextFrameBuffer::lines()
+QVector<TextLine> &TextFramebuffer::lines()
 {
     return m_lines;
 }

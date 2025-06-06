@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "TextFrameBuffer.h"
+#include "TextFramebuffer.h"
 
 TEST(TextLineTest, UpdatesBounds) {
     TextLine line;
@@ -34,8 +34,8 @@ TEST(TextLineTest, UpdatesBounds) {
     EXPECT_TRUE(line.blocks().isEmpty());
 }
 
-TEST(TextFrameBufferTest, FillClearPutTextCollect) {
-    TextFrameBuffer fb;
+TEST(TextFramebufferTest, FillClearPutTextCollect) {
+    TextFramebuffer fb;
     TextAttributes attr(QColor(), QColor(), QColor(), 0.0f, nullptr);
 
     fb.fill(QRect(0, 0, 3, 1), QChar('x'), attr);
