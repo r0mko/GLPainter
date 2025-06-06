@@ -2,7 +2,7 @@
 
 #include <QHash>
 #include <QReadWriteLock>
-#include <QRhiTexture>
+#include <QtGui/6.9.1/QtGui/rhi/qrhi.h>
 #include <QVector>
 #include <private/qdistancefield_p.h>
 
@@ -33,16 +33,15 @@ private:
         FontLoader *font;
         char16_t ch;
     };
-    struct KeyHash {
-        size_t operator()(const Key &k) const noexcept {
-            return qHash(quintptr(k.font)) ^ qHash(static_cast<quint32>(k.ch));
-        }
-    };
-    struct KeyEq {
-        bool operator()(const Key &a, const Key &b) const noexcept {
-            return a.font == b.font && a.ch == b.ch;
-        }
-    };
+    friend bool operator==(const Key &a, const Key &b) noexcept
+    {
+        return a.font == b.font && a.ch == b.ch;
+    }
+
+    friend size_t qHash(const Key &k, size_t seed = 0) noexcept
+    {
+        return qHash(quintptr(k.font), seed) ^ qHash(k.ch, seed);
+    }
 
     struct Atlas {
         QRhiTexture *texture = nullptr;
@@ -57,7 +56,7 @@ private:
 
     const int m_cellsPerAtlas;
     QReadWriteLock m_lock;
-    QHash<Key, GlyphIndices, KeyHash, KeyEq> m_cache;
+    QHash<Key, GlyphIndices> m_cache;
     QVector<Atlas> m_atlases;
 };
 
