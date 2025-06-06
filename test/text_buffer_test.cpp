@@ -3,7 +3,7 @@
 
 TEST(TextLineTest, UpdatesBounds) {
     TextLine line;
-    TextAttributes attr;
+    TextAttributes attr(QColor(), QColor(), QColor(), 0.0f, nullptr);
     TextBlock b1(5);
     b1.elements().append({QChar('a'), attr});
     b1.elements().append({QChar('b'), attr});
@@ -36,7 +36,7 @@ TEST(TextLineTest, UpdatesBounds) {
 
 TEST(TextFrameBufferTest, FillClearPutTextCollect) {
     TextFrameBuffer fb;
-    TextAttributes attr;
+    TextAttributes attr(QColor(), QColor(), QColor(), 0.0f, nullptr);
 
     fb.fill(QRect(0, 0, 3, 1), QChar('x'), attr);
     ASSERT_EQ(fb.lines().size(), 1);
