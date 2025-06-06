@@ -10,5 +10,8 @@ Guidelines for contributions:
   - `test/` contains tests written with GoogleTest.
 - **Merge strategy:** Always squash commits when merging pull requests so the repository history shows only one commit per change.
 - **Commits and branch names:** Use only printable ASCII characters for branch names and commit messages. Do not use non-ASCII symbols, non-breaking spaces, bidirectional unicode marks, or any characters outside the standard printable ASCII range. All commit messages and branch names must be in clear English.
+- **Precondition:** Any code generation, refactoring, or automated modification must be preceded by a successful CMake configuration (cmake dry run). If `cmake -S . -B ../build` fails, do not attempt further code changes or generation until configuration errors are resolved.
+
+
 
 Follow these instructions unless overridden by a more specific AGENTS.md deeper in the directory tree.
