@@ -28,6 +28,7 @@ void TextView::setWidth(int w)
     if (m_width == w)
         return;
     m_width = w;
+    updateImplicitSize();
     emit widthChanged();
 }
 
@@ -41,6 +42,7 @@ void TextView::setHeight(int h)
     if (m_height == h)
         return;
     m_height = h;
+    updateImplicitSize();
     emit heightChanged();
 }
 
@@ -80,10 +82,19 @@ void TextView::setCharacterSize(const QSizeF &size)
     if (m_characterSize == size)
         return;
     m_characterSize = size;
+    updateImplicitSize();
     emit characterSizeChanged();
 }
 
 QQuickRhiItemRenderer *TextView::createRenderer()
 {
     return nullptr;
+}
+
+void TextView::updateImplicitSize()
+{
+    const qreal w = m_width * m_characterSize.width();
+    const qreal h = m_height * m_characterSize.height();
+    setImplicitWidth(w);
+    setImplicitHeight(h);
 }
