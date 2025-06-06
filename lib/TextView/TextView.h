@@ -54,4 +54,6 @@ private:
     int m_posX = 0;
     int m_posY = 0;
     QSizeF m_characterSize;
+
+    void updateImplicitSize();
 };
