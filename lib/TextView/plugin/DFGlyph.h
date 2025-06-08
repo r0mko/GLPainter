@@ -6,6 +6,8 @@
 
 Q_MOC_INCLUDE("FontLoaderObject.h")
 
+namespace ui::textview::qml {
+
 class FontLoaderObject;
 
 class DFGlyph : public QQuickPaintedItem
@@ -39,3 +41,5 @@ private:
     QDistanceField m_df;
     bool m_dirty = false;
 };
+
+} // namespace ui::textview::qml

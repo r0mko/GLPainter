@@ -4,6 +4,8 @@
 #include <QHash>
 #include <cstddef>
 
+namespace ui::textview {
+
 void TextRenderer::initialize(QRhi *rhi, QRhiRenderTarget *rt, QRhiCommandBuffer *cb)
 {
     m_rhi = rhi;
@@ -184,3 +186,5 @@ QSizeF TextRenderer::pixelSize() const
 {
     return QSizeF(m_viewWidth * m_charWidth, m_viewHeight * m_charHeight);
 }
+
+} // namespace ui::textview

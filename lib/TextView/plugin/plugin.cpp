@@ -4,6 +4,10 @@
 #include "DFGlyph.h"
 #include "FontLoaderObject.h"
 #include "TextFramebufferObject.h"
+#include "QmlTextAttributes.h"
+#include "TextAttributesSingleton.h"
+
+namespace ui::textview::qml {
 
 void UiEditorsPlugin::registerTypes(const char *uri)
 {
@@ -12,4 +16,8 @@ void UiEditorsPlugin::registerTypes(const char *uri)
     qmlRegisterType<DFGlyph>(uri, 1, 0, "DFGlyph");
     qmlRegisterType<FontLoaderObject>(uri, 1, 0, "FontLoader");
     qmlRegisterType<TextFramebufferObject>(uri, 1, 0, "TextFramebuffer");
+    qmlRegisterUncreatableType<TextAttributes>(uri, 1, 0, "TextAttributes", QStringLiteral("Use TextAttributes.create()"));
+    qmlRegisterSingletonType<TextAttributesSingleton>(uri, 1, 0, "TextAttributes", [](QQmlEngine *, QJSEngine *) -> QObject* { return new TextAttributesSingleton; });
 }
+
+} // namespace ui::textview::qml

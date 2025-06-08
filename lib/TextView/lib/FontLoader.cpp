@@ -2,6 +2,8 @@
 #include <QDebug>
 #include <cmath>
 
+namespace ui::textview {
+
 FontLoader::FontLoader(qreal pixelSize, int cellsPerAtlas)
     : m_pixelSize(pixelSize)
     , m_cellsPerAtlas(cellsPerAtlas)
@@ -34,6 +36,13 @@ bool FontLoader::loadFont(const QString &fileName)
         qWarning() << "Failed to load font" << fileName;
         return false;
     }
+}
+
+bool FontLoader::setFont(const QFont &font)
+{
+    m_font = QRawFont::fromFont(font, QFont::PreferDefaultHinting);
+    m_pixelSize = font.pixelSize();
+    return m_font.isValid();
 }
 
 bool FontLoader::isValid() const
@@ -144,3 +153,5 @@ QRhiTexture *FontLoader::atlasTexture(int index) const
         return nullptr;
     return m_atlases[index].texture;
 }
+
+} // namespace ui::textview

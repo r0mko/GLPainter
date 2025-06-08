@@ -5,6 +5,8 @@
 #include "TextRenderer.h"
 #include "TextFramebuffer.h"
 
+namespace ui::textview::qml {
+
 class TextView;
 
 class QuickTextViewRenderer : public QQuickRhiItemRenderer
@@ -19,6 +21,8 @@ protected:
 
 private:
     TextView *m_view = nullptr;
-    QVector<RenderCell> m_cells;
-    TextRenderer m_renderer;
+    QVector<ui::textview::RenderCell> m_cells;
+    ui::textview::TextRenderer m_renderer;
 };
+
+} // namespace ui::textview::qml

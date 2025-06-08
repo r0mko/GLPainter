@@ -1,5 +1,7 @@
 #include "FontLoaderObject.h"
 
+namespace ui::textview::qml {
+
 FontLoaderObject::FontLoaderObject(QObject *parent)
     : QObject(parent)
 {
@@ -55,3 +57,5 @@ FontLoader *FontLoaderObject::loader()
 {
     return &m_loader;
 }
+
+} // namespace ui::textview::qml

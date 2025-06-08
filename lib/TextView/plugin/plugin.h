@@ -2,6 +2,8 @@
 
 #include <QQmlExtensionPlugin>
 
+namespace ui::textview::qml {
+
 class UiEditorsPlugin : public QQmlExtensionPlugin
 {
     Q_OBJECT
@@ -10,3 +12,5 @@ class UiEditorsPlugin : public QQmlExtensionPlugin
 public:
     void registerTypes(const char *uri) override;
 };
+
+} // namespace ui::textview::qml

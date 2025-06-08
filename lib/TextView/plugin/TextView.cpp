@@ -3,6 +3,7 @@
 #include <QRawFont>
 #include <QDebug>
 
+namespace ui::textview::qml {
 TextView::TextView(QQuickItem *parent)
     : QQuickRhiItem(parent)
 {
@@ -54,33 +55,33 @@ void TextView::setFramebuffer(TextFramebufferObject *fb)
     update();
 }
 
-int TextView::width() const
+int TextView::renderWidth() const
 {
-    return m_width;
+    return m_renderWidth;
 }
 
-void TextView::setWidth(int w)
+void TextView::setRenderWidth(int w)
 {
-    if (m_width == w)
+    if (m_renderWidth == w)
         return;
-    m_width = w;
+    m_renderWidth = w;
     updateImplicitSize();
-    emit widthChanged();
+    emit renderWidthChanged();
     update();
 }
 
-int TextView::height() const
+int TextView::renderHeight() const
 {
-    return m_height;
+    return m_renderHeight;
 }
 
-void TextView::setHeight(int h)
+void TextView::setRenderHeight(int h)
 {
-    if (m_height == h)
+    if (m_renderHeight == h)
         return;
-    m_height = h;
+    m_renderHeight = h;
     updateImplicitSize();
-    emit heightChanged();
+    emit renderHeightChanged();
     update();
 }
 
@@ -124,6 +125,8 @@ void TextView::updateImplicitSize()
     const QRawFont &f = m_fontLoader->font();
     const qreal charWidth = f.averageCharWidth();
     const qreal charHeight = f.ascent() + f.descent();
-    setImplicitWidth(m_width * charWidth);
-    setImplicitHeight(m_height * charHeight);
+    setImplicitWidth(m_renderWidth * charWidth);
+    setImplicitHeight(m_renderHeight * charHeight);
 }
+
+} // namespace ui::textview::qml

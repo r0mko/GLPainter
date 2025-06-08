@@ -2,6 +2,8 @@
 
 #include <QColor>
 
+namespace ui::textview {
+
 class FontLoader;
 
 class TextAttributes
@@ -29,3 +31,5 @@ private:
     const Data *m_data = nullptr;
     static const Data *get(const Data &data);
 };
+
+} // namespace ui::textview

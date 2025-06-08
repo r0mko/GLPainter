@@ -8,6 +8,8 @@
 #include "TextFramebuffer.h"
 #include "FontLoader.h"
 
+namespace ui::textview {
+
 class TextRenderer
 {
 public:
@@ -51,3 +53,5 @@ private:
     QRhiShaderResourceBindings *m_srb = nullptr;
     QRhiSampler *m_sampler = nullptr;
 };
+
+} // namespace ui::textview
