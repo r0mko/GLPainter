@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QPainterPath>
 
+namespace ui::textview::qml {
 DFGlyph::DFGlyph(QQuickItem *parent)
     : QQuickPaintedItem(parent)
 {
@@ -79,3 +80,5 @@ void DFGlyph::setDirty()
     updateDF();
     update();
 }
+
+} // namespace ui::textview::qml

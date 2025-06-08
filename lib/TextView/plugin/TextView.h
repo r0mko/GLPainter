@@ -6,13 +6,15 @@
 #include "TextFramebufferObject.h"
 #include "FontLoaderObject.h"
 
+namespace ui::textview::qml {
+
 class TextView : public QQuickRhiItem
 {
     Q_OBJECT
     QML_ELEMENT
     Q_PROPERTY(TextFramebufferObject* framebuffer READ framebuffer WRITE setFramebuffer NOTIFY framebufferChanged)
-    Q_PROPERTY(int width READ width WRITE setWidth NOTIFY widthChanged)
-    Q_PROPERTY(int height READ height WRITE setHeight NOTIFY heightChanged)
+    Q_PROPERTY(int renderWidth READ renderWidth WRITE setRenderWidth NOTIFY renderWidthChanged)
+    Q_PROPERTY(int renderHeight READ renderHeight WRITE setRenderHeight NOTIFY renderHeightChanged)
     Q_PROPERTY(int posX READ posX WRITE setPosX NOTIFY posXChanged)
     Q_PROPERTY(int posY READ posY WRITE setPosY NOTIFY posYChanged)
     Q_PROPERTY(qreal fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
@@ -29,11 +31,11 @@ public:
     qreal fontSize() const;
     void setFontSize(qreal size);
 
-    int width() const;
-    void setWidth(int w);
+    int renderWidth() const;
+    void setRenderWidth(int w);
 
-    int height() const;
-    void setHeight(int h);
+    int renderHeight() const;
+    void setRenderHeight(int h);
 
     int posX() const;
     void setPosX(int x);
@@ -44,8 +46,8 @@ public:
 
 signals:
     void framebufferChanged();
-    void widthChanged();
-    void heightChanged();
+    void renderWidthChanged();
+    void renderHeightChanged();
     void posXChanged();
     void posYChanged();
     void fontLoaderChanged();
@@ -56,8 +58,8 @@ protected:
 
 private:
     TextFramebufferObject *m_framebuffer = nullptr;
-    int m_width = 0;
-    int m_height = 0;
+    int m_renderWidth = 0;
+    int m_renderHeight = 0;
     int m_posX = 0;
     int m_posY = 0;
     FontLoaderObject *m_fontLoader = nullptr;
@@ -65,3 +67,5 @@ private:
 
     void updateImplicitSize();
 };
+
+} // namespace ui::textview::qml

@@ -4,6 +4,8 @@
 #include <QtQml/qqml.h>
 #include "FontLoader.h"
 
+namespace ui::textview::qml {
+
 class FontLoaderObject : public QObject
 {
     Q_OBJECT
@@ -35,5 +37,7 @@ signals:
     void familyNameChanged();
 
 private:
-    FontLoader m_loader;
+    ui::textview::FontLoader m_loader;
 };
+
+} // namespace ui::textview::qml

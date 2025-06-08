@@ -9,6 +9,8 @@
 
 #include "TextAttributes.h"
 
+namespace ui::textview {
+
 struct TextElement
 {
     QChar character;
@@ -80,3 +82,4 @@ private:
     QVector<TextLine> m_lines;
 };
 
+} // namespace ui::textview

@@ -1,10 +1,13 @@
 #pragma once
 
 #include <QRawFont>
+#include <QFont>
 #include <QHash>
 #include <QReadWriteLock>
 #include <QtGui/6.9.1/QtGui/rhi/qrhi.h>
 #include <private/qdistancefield_p.h>
+
+namespace ui::textview {
 
 class FontLoader
 {
@@ -19,6 +22,7 @@ public:
 
     QString fileName() const;
     bool loadFont(const QString &fileName);
+    bool setFont(const QFont &font);
     bool isValid() const;
 
     qreal pixelSize() const;
@@ -54,3 +58,5 @@ private:
     QSize m_cellSize;
     int m_cellsPerRow = 1;
 };
+
+} // namespace ui::textview

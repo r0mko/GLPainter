@@ -69,6 +69,9 @@ qt_add_qml_module(TextViewPlugin
         plugin/FontLoaderObject.h
         plugin/TextFramebufferObject.cpp
         plugin/TextFramebufferObject.h
+        plugin/QmlTextAttributes.cpp
+        plugin/QmlTextAttributes.h
+        plugin/TextAttributesSingleton.h
 )
 
 target_link_libraries(TextViewPlugin

@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+namespace ui::textview {
+
 TextBlock::TextBlock(int position)
     : m_position(position)
 {
@@ -187,4 +189,6 @@ QVector<TextLine> &TextFramebuffer::lines()
 {
     return m_lines;
 }
+
+} // namespace ui::textview
 

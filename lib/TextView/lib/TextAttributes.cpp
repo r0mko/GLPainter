@@ -2,6 +2,7 @@
 #include "qglobal.h"
 #include <QHash>
 
+namespace ui::textview {
 using TextAttribteStorage = QHash<size_t, const TextAttributes::Data *>;
 Q_GLOBAL_STATIC(TextAttribteStorage, textAttributesStore)
 
@@ -50,3 +51,5 @@ const TextAttributes::Data *TextAttributes::get(const Data &d)
     textAttributesStore->insert(h, ptr);
     return ptr;
 }
+
+} // namespace ui::textview
