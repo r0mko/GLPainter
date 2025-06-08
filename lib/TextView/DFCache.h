@@ -28,6 +28,11 @@ public:
                        QRhi *rhi,
                        QRhiResourceUpdateBatch *updates);
 
+    QSize cellSize() const;
+    int cellsPerRow() const;
+    int atlasCount() const;
+    QRhiTexture *atlasTexture(int index) const;
+
 private:
     struct Key {
         FontLoader *font;
@@ -58,5 +63,7 @@ private:
     QReadWriteLock m_lock;
     QHash<Key, GlyphIndices> m_cache;
     QVector<Atlas> m_atlases;
+    QSize m_cellSize;
+    int m_cellsPerRow = 1;
 };
 
