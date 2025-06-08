@@ -1,5 +1,5 @@
 #include "DFGlyph.h"
-#include "FontLoader.h"
+#include "FontLoaderObject.h"
 #include <QDebug>
 #include <QPainterPath>
 
@@ -22,12 +22,12 @@ void DFGlyph::paint(QPainter *painter)
     painter->strokePath(path, pen);
 }
 
-FontLoader *DFGlyph::fontLoader() const
+FontLoaderObject *DFGlyph::fontLoader() const
 {
     return m_fontLoader;
 }
 
-void DFGlyph::setFontLoader(FontLoader *fontLoader)
+void DFGlyph::setFontLoader(FontLoaderObject *fontLoader)
 {
     if (m_fontLoader == fontLoader)
         return;

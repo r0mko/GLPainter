@@ -13,6 +13,10 @@ qt_add_qml_module(TextViewPlugin
         QuickTextViewRenderer.h
         DFGlyph.cpp
         DFGlyph.h
+        FontLoaderObject.cpp
+        FontLoaderObject.h
+        TextFramebufferObject.cpp
+        TextFramebufferObject.h
 )
 
 target_link_libraries(TextViewPlugin

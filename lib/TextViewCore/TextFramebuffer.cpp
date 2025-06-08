@@ -81,10 +81,6 @@ QVector<TextBlock> &TextLine::blocks()
     return m_blocks;
 }
 
-TextFramebuffer::TextFramebuffer(QObject *parent)
-    : QObject(parent)
-{
-}
 
 void TextFramebuffer::putText(int row, int column, const QString &text, const TextAttributes &attr)
 {
@@ -93,7 +89,6 @@ void TextFramebuffer::putText(int row, int column, const QString &text, const Te
     int oldSize = m_lines.size();
     if (m_lines.size() <= row) {
         m_lines.resize(row + 1);
-        emit linesAdded(oldSize, m_lines.size() - oldSize);
     }
     TextBlock block(column);
     block.elements().reserve(text.size());
@@ -101,7 +96,6 @@ void TextFramebuffer::putText(int row, int column, const QString &text, const Te
         block.elements().append({ch, attr});
     }
     m_lines[row].addBlock(block);
-    emit changed(row, 1);
 }
 
 void TextFramebuffer::writeLn(const QString &text, const TextAttributes &attr)
@@ -116,7 +110,6 @@ void TextFramebuffer::clear(const QRect &rect)
             continue;
         if (rect.left() == 0 && rect.right() >= m_lines[y].lastIndex()) {
             m_lines[y].clear();
-            emit changed(y, 1);
             continue;
         }
         // partial clear
@@ -151,7 +144,6 @@ void TextFramebuffer::clear(const QRect &rect)
         m_lines[y].clear();
         for (const TextBlock &b : newBlocks)
             m_lines[y].addBlock(b);
-        emit changed(y, 1);
     }
 }
 

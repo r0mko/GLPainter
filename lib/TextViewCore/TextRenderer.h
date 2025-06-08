@@ -4,6 +4,7 @@
 #include <QVector2D>
 #include <QVector4D>
 #include <QtGui/6.9.1/QtGui/rhi/qrhi.h>
+#include <QSizeF>
 #include "DFCache.h"
 #include "TextFramebuffer.h"
 #include "FontLoader.h"
@@ -22,6 +23,8 @@ public:
                  int viewHeight);
     void render(QRhiCommandBuffer *cb);
 
+    QSizeF pixelSize() const;
+
 private:
     struct InstanceData {
         QVector2D pos;
@@ -39,6 +42,8 @@ private:
     int m_viewPosY = 0;
     int m_viewWidth = 0;
     int m_viewHeight = 0;
+    float m_charWidth = 0.f;
+    float m_charHeight = 0.f;
 
     QRhiBuffer *m_vbuf = nullptr;
     QRhiBuffer *m_instBuf = nullptr;

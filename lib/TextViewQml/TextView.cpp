@@ -8,23 +8,23 @@ TextView::TextView(QQuickItem *parent)
 {
 }
 
-TextFramebuffer *TextView::framebuffer() const
+TextFramebufferObject *TextView::framebuffer() const
 {
     return m_framebuffer;
 }
 
-FontLoader *TextView::fontLoader() const
+FontLoaderObject *TextView::fontLoader() const
 {
     return m_fontLoader;
 }
 
-void TextView::setFontLoader(FontLoader *loader)
+void TextView::setFontLoader(FontLoaderObject *loader)
 {
     if (m_fontLoader == loader)
         return;
     m_fontLoader = loader;
     if (m_fontLoader)
-        m_fontSize = m_fontLoader->pixelSize();
+        m_fontSize = m_fontLoader->loader()->pixelSize();
     updateImplicitSize();
     emit fontLoaderChanged();
     emit fontSizeChanged();
@@ -47,7 +47,7 @@ void TextView::setFontSize(qreal size)
     emit fontSizeChanged();
     update();
 }
-void TextView::setFramebuffer(TextFramebuffer *fb)
+void TextView::setFramebuffer(TextFramebufferObject *fb)
 {
     if (m_framebuffer == fb)
         return;

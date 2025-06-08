@@ -87,6 +87,14 @@ void TextRenderer::prepare(const QVector<RenderCell> &cells,
     m_viewPosY = viewPosY;
     m_viewWidth = viewWidth;
     m_viewHeight = viewHeight;
+    if (m_fontLoader) {
+        const QRawFont &font = m_fontLoader->font();
+        m_charWidth = font.averageCharWidth();
+        m_charHeight = font.ascent() + font.descent();
+    } else {
+        m_charWidth = 0.f;
+        m_charHeight = 0.f;
+    }
 }
 
 void TextRenderer::render(QRhiCommandBuffer *cb)
@@ -164,4 +172,9 @@ void TextRenderer::render(QRhiCommandBuffer *cb)
     }
 
     cb->endPass();
+}
+
+QSizeF TextRenderer::pixelSize() const
+{
+    return QSizeF(m_viewWidth * m_charWidth, m_viewHeight * m_charHeight);
 }
