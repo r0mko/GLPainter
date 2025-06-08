@@ -1,4 +1,5 @@
 #include "FontLoader.h"
+#include <QDebug>
 
 FontLoader::FontLoader() {}
 

@@ -1,14 +1,12 @@
-#include "TextViewRenderer.h"
-#include "TextView.h"
-#include "FontLoader.h"
+#include "TextRenderer.h"
 #include <QFile>
 #include <QMatrix4x4>
 #include <cstddef>
 
-void TextViewRenderer::initialize(QRhiCommandBuffer *cb)
+void TextRenderer::initialize(QRhi *rhi, QRhiRenderTarget *rt, QRhiCommandBuffer *cb)
 {
-    Q_UNUSED(cb);
-    QRhi *r = rhi();
+    m_rhi = rhi;
+    m_renderTarget = rt;
 
     static const float verts[] = {
         0.0f, 0.0f, 0.0f, 0.0f,
@@ -17,23 +15,22 @@ void TextViewRenderer::initialize(QRhiCommandBuffer *cb)
         1.0f, 1.0f, 1.0f, 1.0f
     };
 
-    m_vbuf = r->newBuffer(QRhiBuffer::Immutable, QRhiBuffer::VertexBuffer,
-                           sizeof(verts));
+    m_vbuf = rhi->newBuffer(QRhiBuffer::Immutable, QRhiBuffer::VertexBuffer, sizeof(verts));
     m_vbuf->create();
-    QRhiResourceUpdateBatch *u = r->nextResourceUpdateBatch();
+    QRhiResourceUpdateBatch *u = rhi->nextResourceUpdateBatch();
     u->uploadStaticBuffer(m_vbuf, verts);
     cb->resourceUpdate(u);
 
-    m_instBuf = r->newBuffer(QRhiBuffer::Dynamic, QRhiBuffer::VertexBuffer, 0);
+    m_instBuf = rhi->newBuffer(QRhiBuffer::Dynamic, QRhiBuffer::VertexBuffer, 0);
     m_instBuf->create();
 
-    m_ubuf = r->newBuffer(QRhiBuffer::Dynamic, QRhiBuffer::UniformBuffer,
-                          r->ubufAligned(sizeof(QMatrix4x4)));
+    m_ubuf = rhi->newBuffer(QRhiBuffer::Dynamic, QRhiBuffer::UniformBuffer,
+                             rhi->ubufAligned(sizeof(QMatrix4x4)));
     m_ubuf->create();
 
-    m_sampler = r->newSampler(QRhiSampler::Linear, QRhiSampler::Linear,
-                              QRhiSampler::None, QRhiSampler::ClampToEdge,
-                              QRhiSampler::ClampToEdge);
+    m_sampler = rhi->newSampler(QRhiSampler::Linear, QRhiSampler::Linear,
+                               QRhiSampler::None, QRhiSampler::ClampToEdge,
+                               QRhiSampler::ClampToEdge);
     m_sampler->create();
 
     QFile vsFile(":/shaders/textview.vert.qsb");
@@ -43,14 +40,14 @@ void TextViewRenderer::initialize(QRhiCommandBuffer *cb)
     fsFile.open(QIODevice::ReadOnly);
     QShader fs = QShader::fromSerialized(fsFile.readAll());
 
-    m_srb = r->newShaderResourceBindings();
+    m_srb = rhi->newShaderResourceBindings();
     m_srb->setBindings({
         QRhiShaderResourceBinding::uniformBuffer(0, QRhiShaderResourceBinding::VertexStage, m_ubuf),
         QRhiShaderResourceBinding::sampledTexture(1, QRhiShaderResourceBinding::FragmentStage, nullptr, m_sampler)
     });
     m_srb->create();
 
-    QRhiGraphicsPipeline *ps = r->newGraphicsPipeline();
+    QRhiGraphicsPipeline *ps = rhi->newGraphicsPipeline();
     QRhiVertexInputLayout inputLayout;
     inputLayout.setBindings({
         {4 * sizeof(float)},
@@ -71,37 +68,41 @@ void TextViewRenderer::initialize(QRhiCommandBuffer *cb)
     });
     ps->setVertexInputLayout(inputLayout);
     ps->setShaderResourceBindings(m_srb);
-    ps->setRenderPassDescriptor(renderTarget()->renderPassDescriptor());
+    ps->setRenderPassDescriptor(rt->renderPassDescriptor());
     ps->setTopology(QRhiGraphicsPipeline::TriangleStrip);
     m_pipe = ps;
     m_pipe->create();
 }
 
-void TextViewRenderer::synchronize(QQuickRhiItem *item)
+void TextRenderer::prepare(const QVector<RenderCell> &cells,
+                           FontLoader *fontLoader,
+                           int viewPosX,
+                           int viewPosY,
+                           int viewWidth,
+                           int viewHeight)
 {
-    m_view = static_cast<TextView *>(item);
-    if (m_view && m_view->framebuffer()) {
-        QRect region(m_view->posX(), m_view->posY(), m_view->width(), m_view->height());
-        m_cells = m_view->framebuffer()->collect(region);
-    } else {
-        m_cells.clear();
-    }
+    m_cells = cells;
+    m_fontLoader = fontLoader;
+    m_viewPosX = viewPosX;
+    m_viewPosY = viewPosY;
+    m_viewWidth = viewWidth;
+    m_viewHeight = viewHeight;
 }
 
-void TextViewRenderer::render(QRhiCommandBuffer *cb)
+void TextRenderer::render(QRhiCommandBuffer *cb)
 {
-    if (!m_view || !m_view->fontLoader() || m_cells.isEmpty())
+    if (!m_fontLoader || m_cells.isEmpty())
         return;
 
-    QRhi *r = rhi();
+    QRhi *r = m_rhi;
     QRhiResourceUpdateBatch *u = r->nextResourceUpdateBatch();
 
-    const QRawFont &font = m_view->fontLoader()->font();
+    const QRawFont &font = m_fontLoader->font();
     float charW = font.averageCharWidth();
     float charH = font.ascent() + font.descent();
 
     QMatrix4x4 m;
-    m.ortho(0.0f, float(m_view->width()) * charW, float(m_view->height()) * charH, 0.0f, -1.0f, 1.0f);
+    m.ortho(0.0f, float(m_viewWidth) * charW, float(m_viewHeight) * charH, 0.0f, -1.0f, 1.0f);
     u->updateDynamicBuffer(m_ubuf, 0, sizeof(QMatrix4x4), m.constData());
 
     QVector<QVector<InstanceData>> groups(m_cache.atlasCount());
@@ -109,15 +110,15 @@ void TextViewRenderer::render(QRhiCommandBuffer *cb)
     QSize atlasSz(cellSz.width() * m_cache.cellsPerRow(), cellSz.height() * m_cache.cellsPerRow());
     for (const RenderCell &cell : m_cells) {
         const TextAttributes::Data &attr = cell.attributes.data();
-        FontLoader *fl = attr.font ? attr.font : m_view->fontLoader();
+        FontLoader *fl = attr.font ? attr.font : m_fontLoader;
         auto gi = m_cache.glyph(fl, cell.character, r, u);
         if (gi.atlas < 0)
             continue;
         int row = gi.index / m_cache.cellsPerRow();
         int col = gi.index % m_cache.cellsPerRow();
         InstanceData id;
-        id.pos = QVector2D((cell.position.x() - m_view->posX()) * cellSz.width(),
-                            (cell.position.y() - m_view->posY()) * cellSz.height());
+        id.pos = QVector2D((cell.position.x() - m_viewPosX) * cellSz.width(),
+                            (cell.position.y() - m_viewPosY) * cellSz.height());
         id.size = QVector2D(cellSz.width(), cellSz.height());
         id.uvOrigin = QVector2D(float(col * cellSz.width()) / atlasSz.width(),
                                 float(row * cellSz.height()) / atlasSz.height());
@@ -129,9 +130,9 @@ void TextViewRenderer::render(QRhiCommandBuffer *cb)
         groups[gi.atlas].append(id);
     }
 
-    cb->beginPass(renderTarget(), Qt::transparent, {1.0f, 0}, u);
+    cb->beginPass(m_renderTarget, Qt::transparent, {1.0f, 0}, u);
     cb->setGraphicsPipeline(m_pipe);
-    cb->setViewport({0, 0, float(renderTarget()->pixelSize().width()), float(renderTarget()->pixelSize().height())});
+    cb->setViewport({0, 0, float(m_renderTarget->pixelSize().width()), float(m_renderTarget->pixelSize().height())});
     QRhiCommandBuffer::VertexInput vbufs[] = {
         { m_vbuf, 0 },
         { m_instBuf, 0 }
@@ -164,4 +165,3 @@ void TextViewRenderer::render(QRhiCommandBuffer *cb)
 
     cb->endPass();
 }
-

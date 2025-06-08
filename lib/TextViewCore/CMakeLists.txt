@@ -1,23 +1,18 @@
-find_package(Qt6 REQUIRED COMPONENTS Quick Qml)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui)
 
-qt_add_library(TextViewLib
+qt_add_library(TextViewCore
     SHARED
     FontLoader.h
-    TextView.h
     TextFramebuffer.h
-    TextViewRenderer.h
+    TextRenderer.h
     DFCache.h
-    DFGlyph.h
-    FontLoader.cpp
-    TextView.cpp
-    TextFramebuffer.cpp
-    TextViewRenderer.cpp
-    DFCache.cpp
-    DFGlyph.cpp
-    TextAttributes.cpp
     TextAttributes.h
+    FontLoader.cpp
+    TextFramebuffer.cpp
+    TextRenderer.cpp
+    DFCache.cpp
+    TextAttributes.cpp
 )
-
 
 set(TEXTVIEW_SHADERS
     shaders/textview.vert
@@ -35,31 +30,16 @@ foreach(src ${TEXTVIEW_SHADERS})
     list(APPEND TEXTVIEW_QSBS ${out})
 endforeach()
 add_custom_target(TextViewShaders ALL DEPENDS ${TEXTVIEW_QSBS})
-add_dependencies(TextViewLib TextViewShaders)
+add_dependencies(TextViewCore TextViewShaders)
 foreach(qsb ${TEXTVIEW_QSBS})
     get_filename_component(alias ${qsb} NAME)
     set_source_files_properties(${qsb} PROPERTIES QT_RESOURCE_ALIAS ${alias})
 endforeach()
-qt_add_resources(TextViewLib textview_qsb PREFIX "/shaders" FILES ${TEXTVIEW_QSBS})
+qt_add_resources(TextViewCore textview_qsb PREFIX "/shaders" FILES ${TEXTVIEW_QSBS})
 
-target_link_libraries(TextViewLib
+target_link_libraries(TextViewCore
     PUBLIC
-        Qt6::Quick
-        Qt6::QuickPrivate
-)
-
-qt_add_qml_module(TextViewPlugin
-    URI UI.Editors
-    VERSION 1.0
-    CLASS_NAME UiEditorsPlugin
-    SOURCES
-        plugin.cpp
-        plugin.h
-)
-
-target_link_libraries(TextViewPlugin
-    PRIVATE
-        TextViewLib
-        Qt6::Quick
-        Qt6::Qml
+        Qt6::Core
+        Qt6::Gui
+        Qt6::GuiPrivate
 )

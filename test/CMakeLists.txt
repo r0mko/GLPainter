@@ -9,7 +9,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 FetchContent_MakeAvailable(googletest)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Quick)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui)
 
 add_executable(GLPainterTests
     sample_test.cpp
@@ -18,13 +18,13 @@ add_executable(GLPainterTests
 
 target_link_libraries(GLPainterTests PRIVATE
     GTest::gtest_main
-    TextViewLib
+    TextViewCore
     Qt6::Core
-    Qt6::Quick
+    Qt6::Gui
 )
 
 target_include_directories(GLPainterTests PRIVATE
-    ${CMAKE_SOURCE_DIR}/lib/TextView
+    ${CMAKE_SOURCE_DIR}/lib/TextViewCore
 )
 
 include(GoogleTest)

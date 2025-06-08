@@ -1,5 +1,5 @@
 #include "TextView.h"
-#include "TextViewRenderer.h"
+#include "QuickTextViewRenderer.h"
 #include <QRawFont>
 #include <QDebug>
 
@@ -116,7 +116,7 @@ void TextView::setPosY(int y)
 
 QQuickRhiItemRenderer *TextView::createRenderer()
 {
-    return new TextViewRenderer;
+    return new QuickTextViewRenderer;
 }
 
 void TextView::updateImplicitSize()

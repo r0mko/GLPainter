@@ -1,3 +1,2 @@
-# Add library and QML plugin subprojects here
-add_subdirectory(TextView)
-
+add_subdirectory(TextViewCore)
+add_subdirectory(TextViewQml)

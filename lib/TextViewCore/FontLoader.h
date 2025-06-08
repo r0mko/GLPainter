@@ -1,12 +1,10 @@
 #pragma once
 
 #include <QObject>
-#include <QQmlEngine>
 #include <QRawFont>
 
 class FontLoader : public QObject
 {
-    QML_ELEMENT
     Q_OBJECT
 
     Q_PROPERTY(QString fileName READ fileName WRITE setFileName NOTIFY fileNameChanged FINAL)

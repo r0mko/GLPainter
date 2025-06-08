@@ -7,7 +7,6 @@
 #include <QPoint>
 #include <QString>
 #include <QObject>
-#include <QtQml/qqml.h>
 
 #include "TextAttributes.h"
 
@@ -67,7 +66,6 @@ struct RenderCell
 class TextFramebuffer : public QObject
 {
     Q_OBJECT
-    QML_ELEMENT
 public:
     explicit TextFramebuffer(QObject *parent = nullptr);
 
