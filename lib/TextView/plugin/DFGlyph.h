@@ -4,15 +4,15 @@
 #include <QQuickPaintedItem>
 #include <private/qdistancefield_p.h>
 
-Q_MOC_INCLUDE("FontLoader.h")
+Q_MOC_INCLUDE("FontLoaderObject.h")
 
-class FontLoader;
+class FontLoaderObject;
 
 class DFGlyph : public QQuickPaintedItem
 {
     Q_OBJECT
     QML_ELEMENT
-    Q_PROPERTY(FontLoader *fontLoader READ fontLoader WRITE setFontLoader NOTIFY fontLoaderChanged FINAL)
+    Q_PROPERTY(FontLoaderObject *fontLoader READ fontLoader WRITE setFontLoader NOTIFY fontLoaderChanged FINAL)
     Q_PROPERTY(QChar character READ character WRITE setCharacter NOTIFY characterChanged FINAL)
 
 public:
@@ -21,8 +21,8 @@ public:
     // QQuickPaintedItem interface
 public:
     void paint(QPainter *painter) override;
-    FontLoader *fontLoader() const;
-    void setFontLoader(FontLoader *fontLoader);
+    FontLoaderObject *fontLoader() const;
+    void setFontLoader(FontLoaderObject *fontLoader);
     QChar character() const;
     void setCharacter(const QChar &character);
 
@@ -33,7 +33,7 @@ signals:
 private:
     void updateDF();
     void setDirty();
-    FontLoader *m_fontLoader = nullptr;
+    FontLoaderObject *m_fontLoader = nullptr;
     QChar m_character;
     QPointF m_topLeft;
     QDistanceField m_df;

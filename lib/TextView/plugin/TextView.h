@@ -3,28 +3,28 @@
 #include <QQuickRhiItem>
 #include <QtQml/qqml.h>
 #include <QSizeF>
-#include "TextFramebuffer.h"
-#include "FontLoader.h"
+#include "TextFramebufferObject.h"
+#include "FontLoaderObject.h"
 
 class TextView : public QQuickRhiItem
 {
     Q_OBJECT
     QML_ELEMENT
-    Q_PROPERTY(TextFramebuffer* framebuffer READ framebuffer WRITE setFramebuffer NOTIFY framebufferChanged)
+    Q_PROPERTY(TextFramebufferObject* framebuffer READ framebuffer WRITE setFramebuffer NOTIFY framebufferChanged)
     Q_PROPERTY(int width READ width WRITE setWidth NOTIFY widthChanged)
     Q_PROPERTY(int height READ height WRITE setHeight NOTIFY heightChanged)
     Q_PROPERTY(int posX READ posX WRITE setPosX NOTIFY posXChanged)
     Q_PROPERTY(int posY READ posY WRITE setPosY NOTIFY posYChanged)
     Q_PROPERTY(qreal fontSize READ fontSize WRITE setFontSize NOTIFY fontSizeChanged)
-    Q_PROPERTY(FontLoader* fontLoader READ fontLoader WRITE setFontLoader NOTIFY fontLoaderChanged)
+    Q_PROPERTY(FontLoaderObject* fontLoader READ fontLoader WRITE setFontLoader NOTIFY fontLoaderChanged)
 public:
     explicit TextView(QQuickItem *parent = nullptr);
 
-    TextFramebuffer *framebuffer() const;
-    void setFramebuffer(TextFramebuffer *fb);
+    TextFramebufferObject *framebuffer() const;
+    void setFramebuffer(TextFramebufferObject *fb);
 
-    FontLoader *fontLoader() const;
-    void setFontLoader(FontLoader *loader);
+    FontLoaderObject *fontLoader() const;
+    void setFontLoader(FontLoaderObject *loader);
 
     qreal fontSize() const;
     void setFontSize(qreal size);
@@ -55,12 +55,12 @@ protected:
     QQuickRhiItemRenderer *createRenderer() override;
 
 private:
-    TextFramebuffer *m_framebuffer = nullptr;
+    TextFramebufferObject *m_framebuffer = nullptr;
     int m_width = 0;
     int m_height = 0;
     int m_posX = 0;
     int m_posY = 0;
-    FontLoader *m_fontLoader = nullptr;
+    FontLoaderObject *m_fontLoader = nullptr;
     qreal m_fontSize = 12.0;
 
     void updateImplicitSize();

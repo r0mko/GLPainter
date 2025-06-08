@@ -1,43 +1,39 @@
 #pragma once
 
 #include <QObject>
-#include <QQmlEngine>
-#include <QRawFont>
+#include <QtQml/qqml.h>
+#include "FontLoader.h"
 
-class FontLoader : public QObject
+class FontLoaderObject : public QObject
 {
-    QML_ELEMENT
     Q_OBJECT
-
+    QML_ELEMENT
     Q_PROPERTY(QString fileName READ fileName WRITE setFileName NOTIFY fileNameChanged FINAL)
     Q_PROPERTY(bool isValid READ isValid NOTIFY isValidChanged FINAL)
-    Q_PROPERTY(qreal pixelSize READ pixelSize WRITE setPixelSize NOTIFY pixelSizeChanged FINAL)
+    Q_PROPERTY(qreal pixelSize READ pixelSize FINAL)
     Q_PROPERTY(QString familyName READ familyName NOTIFY familyNameChanged FINAL)
-
 public:
-    FontLoader();
+    explicit FontLoaderObject(QObject *parent = nullptr);
 
     QString fileName() const;
     void setFileName(const QString &fileName);
     bool isValid() const;
 
     qreal pixelSize() const;
-    void setPixelSize(qreal pixelSize);
 
     int glyphIndex(QChar character) const;
     QRectF boundingRect(int glyphIndex) const;
+
     QString familyName() const;
 
     const QRawFont &font() const;
-    QRawFont &font();
+    FontLoader *loader();
 
 signals:
     void fileNameChanged();
     void isValidChanged();
-    void pixelSizeChanged();
     void familyNameChanged();
 
 private:
-    QString m_fileName;
-    QRawFont m_font;
+    FontLoader m_loader;
 };

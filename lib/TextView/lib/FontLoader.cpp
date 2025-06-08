@@ -1,55 +1,95 @@
-#include "DFCache.h"
 #include "FontLoader.h"
-#include <QtGui/6.9.1/QtGui/rhi/qrhi.h>
 #include <QDebug>
-#include <QImage>
 #include <cmath>
 
-DFCache::DFCache(int cellsPerAtlas)
-    : m_cellsPerAtlas(cellsPerAtlas)
+FontLoader::FontLoader(qreal pixelSize, int cellsPerAtlas)
+    : m_pixelSize(pixelSize)
+    , m_cellsPerAtlas(cellsPerAtlas)
 {
 }
 
-DFCache::~DFCache()
+FontLoader::~FontLoader()
 {
-    for (auto &a : m_atlases) {
+    for (auto &a : m_atlases)
         delete a.texture;
+}
+
+QString FontLoader::fileName() const
+{
+    return m_fileName;
+}
+
+bool FontLoader::loadFont(const QString &fileName)
+{
+    if (m_fileName == fileName && m_font.isValid())
+        return true;
+    m_fileName = fileName;
+    qDebug() << "Loading font from" << fileName;
+    m_font.loadFromFile(m_fileName, m_pixelSize, QFont::PreferDefaultHinting);
+
+    if (m_font.isValid()) {
+        qDebug() << "Loaded font" << m_font.familyName();
+        return true;
+    } else {
+        qWarning() << "Failed to load font" << fileName;
+        return false;
     }
 }
 
-DFCache::GlyphIndices DFCache::glyph(FontLoader *font,
-                                     QChar ch,
-                                     QRhi *rhi,
-                                     QRhiResourceUpdateBatch *updates)
+bool FontLoader::isValid() const
 {
-    Key key{font, ch.unicode()};
+    return m_font.isValid();
+}
+
+qreal FontLoader::pixelSize() const
+{
+    return m_pixelSize;
+}
+
+int FontLoader::glyphIndex(QChar character) const
+{
+    return m_font.glyphIndexesForString({character}).at(0);
+}
+
+QString FontLoader::familyName() const
+{
+    return m_font.familyName();
+}
+
+const QRawFont &FontLoader::font() const
+{
+    return m_font;
+}
+
+QRawFont &FontLoader::font()
+{
+    return m_font;
+}
+
+FontLoader::GlyphIndices FontLoader::glyph(QChar ch, QRhi *rhi, QRhiResourceUpdateBatch *updates)
+{
+    char16_t key = ch.unicode();
     {
         QReadLocker rl(&m_lock);
         auto it = m_cache.constFind(key);
         if (it != m_cache.cend())
             return it.value();
     }
-
     QWriteLocker wl(&m_lock);
     auto it = m_cache.constFind(key);
     if (it != m_cache.cend())
         return it.value();
-    return addGlyph(key, font, ch, rhi, updates);
+    return addGlyph(key, rhi, updates);
 }
 
-DFCache::GlyphIndices DFCache::addGlyph(const Key &key,
-                                        FontLoader *font,
-                                        QChar ch,
-                                        QRhi *rhi,
-                                        QRhiResourceUpdateBatch *updates)
+FontLoader::GlyphIndices FontLoader::addGlyph(char16_t ch, QRhi *rhi, QRhiResourceUpdateBatch *updates)
 {
     Q_ASSERT(rhi);
     Q_ASSERT(updates);
 
     QDistanceField df;
-    const QRawFont &f = font->font();
-    int idx = font->glyphIndex(ch);
-    df.setGlyph(f, idx, true);
+    int idx = glyphIndex(QChar(ch));
+    df.setGlyph(m_font, idx, true);
     QImage img = df.toImage(QImage::Format_Grayscale8);
 
     if (m_cellSize.isEmpty()) {
@@ -62,9 +102,8 @@ DFCache::GlyphIndices DFCache::addGlyph(const Key &key,
         QSize texSize(m_cellSize.width() * m_cellsPerRow,
                       m_cellSize.height() * m_cellsPerRow);
         a.texture = rhi->newTexture(QRhiTexture::R8, texSize, 1);
-        if (!a.texture->create()) {
+        if (!a.texture->create())
             qWarning() << "Failed to create atlas texture";
-        }
         m_atlases.append(a);
     }
 
@@ -80,29 +119,28 @@ DFCache::GlyphIndices DFCache::addGlyph(const Key &key,
     updates->uploadTexture(atlas.texture, desc);
 
     GlyphIndices gi{static_cast<int>(m_atlases.size()) - 1, indexInAtlas};
-    m_cache.insert(key, gi);
+    m_cache.insert(ch, gi);
     return gi;
 }
 
-QSize DFCache::cellSize() const
+QSize FontLoader::cellSize() const
 {
     return m_cellSize;
 }
 
-int DFCache::cellsPerRow() const
+int FontLoader::cellsPerRow() const
 {
     return m_cellsPerRow;
 }
 
-int DFCache::atlasCount() const
+int FontLoader::atlasCount() const
 {
     return m_atlases.size();
 }
 
-QRhiTexture *DFCache::atlasTexture(int index) const
+QRhiTexture *FontLoader::atlasTexture(int index) const
 {
     if (index < 0 || index >= m_atlases.size())
         return nullptr;
     return m_atlases[index].texture;
 }
-
