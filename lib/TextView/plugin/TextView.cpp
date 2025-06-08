@@ -41,8 +41,6 @@ void TextView::setFontSize(qreal size)
     if (qFuzzyCompare(m_fontSize, size))
         return;
     m_fontSize = size;
-    if (m_fontLoader)
-        m_fontLoader->setPixelSize(size);
     updateImplicitSize();
     emit fontSizeChanged();
     update();

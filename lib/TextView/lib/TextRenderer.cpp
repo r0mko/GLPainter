@@ -1,6 +1,7 @@
 #include "TextRenderer.h"
 #include <QFile>
 #include <QMatrix4x4>
+#include <QHash>
 #include <cstddef>
 
 void TextRenderer::initialize(QRhi *rhi, QRhiRenderTarget *rt, QRhiCommandBuffer *cb)
@@ -113,17 +114,17 @@ void TextRenderer::render(QRhiCommandBuffer *cb)
     m.ortho(0.0f, float(m_viewWidth) * charW, float(m_viewHeight) * charH, 0.0f, -1.0f, 1.0f);
     u->updateDynamicBuffer(m_ubuf, 0, sizeof(QMatrix4x4), m.constData());
 
-    QVector<QVector<InstanceData>> groups(m_cache.atlasCount());
-    QSize cellSz = m_cache.cellSize();
-    QSize atlasSz(cellSz.width() * m_cache.cellsPerRow(), cellSz.height() * m_cache.cellsPerRow());
+    QHash<FontLoader *, QVector<QVector<InstanceData>>> groups;
     for (const RenderCell &cell : m_cells) {
         const TextAttributes::Data &attr = cell.attributes.data();
         FontLoader *fl = attr.font ? attr.font : m_fontLoader;
-        auto gi = m_cache.glyph(fl, cell.character, r, u);
+        auto gi = fl->glyph(cell.character, r, u);
         if (gi.atlas < 0)
             continue;
-        int row = gi.index / m_cache.cellsPerRow();
-        int col = gi.index % m_cache.cellsPerRow();
+        QSize cellSz = fl->cellSize();
+        QSize atlasSz(cellSz.width() * fl->cellsPerRow(), cellSz.height() * fl->cellsPerRow());
+        int row = gi.index / fl->cellsPerRow();
+        int col = gi.index % fl->cellsPerRow();
         InstanceData id;
         id.pos = QVector2D((cell.position.x() - m_viewPosX) * cellSz.width(),
                             (cell.position.y() - m_viewPosY) * cellSz.height());
@@ -133,9 +134,10 @@ void TextRenderer::render(QRhiCommandBuffer *cb)
         id.uvSize = QVector2D(float(cellSz.width()) / atlasSz.width(),
                               float(cellSz.height()) / atlasSz.height());
         id.color = QVector4D(attr.color.redF(), attr.color.greenF(), attr.color.blueF(), attr.color.alphaF());
-        if (gi.atlas >= groups.size())
-            groups.resize(gi.atlas + 1);
-        groups[gi.atlas].append(id);
+        QVector<QVector<InstanceData>> &vec = groups[fl];
+        if (vec.size() <= gi.atlas)
+            vec.resize(gi.atlas + 1);
+        vec[gi.atlas].append(id);
     }
 
     cb->beginPass(m_renderTarget, Qt::transparent, {1.0f, 0}, u);
@@ -147,28 +149,32 @@ void TextRenderer::render(QRhiCommandBuffer *cb)
     };
     cb->setVertexInput(0, 2, vbufs);
 
-    for (int i = 0; i < groups.size(); ++i) {
-        const auto &insts = groups[i];
-        if (insts.isEmpty())
-            continue;
-        qsizetype size = insts.size() * sizeof(InstanceData);
-        if (m_instBuf->size() < size) {
-            m_instBuf->setSize(size);
-            m_instBuf->create();
-        }
-        u = r->nextResourceUpdateBatch();
-        u->updateDynamicBuffer(m_instBuf, 0, size, insts.constData());
-        cb->resourceUpdate(u);
+    for (auto it = groups.constBegin(); it != groups.constEnd(); ++it) {
+        FontLoader *fl = it.key();
+        const auto &vec = it.value();
+        for (int i = 0; i < vec.size(); ++i) {
+            const auto &insts = vec[i];
+            if (insts.isEmpty())
+                continue;
+            qsizetype size = insts.size() * sizeof(InstanceData);
+            if (m_instBuf->size() < size) {
+                m_instBuf->setSize(size);
+                m_instBuf->create();
+            }
+            u = r->nextResourceUpdateBatch();
+            u->updateDynamicBuffer(m_instBuf, 0, size, insts.constData());
+            cb->resourceUpdate(u);
 
-        delete m_srb;
-        m_srb = r->newShaderResourceBindings();
-        m_srb->setBindings({
-            QRhiShaderResourceBinding::uniformBuffer(0, QRhiShaderResourceBinding::VertexStage, m_ubuf),
-            QRhiShaderResourceBinding::sampledTexture(1, QRhiShaderResourceBinding::FragmentStage, m_cache.atlasTexture(i), m_sampler)
-        });
-        m_srb->create();
-        cb->setShaderResources(m_srb);
-        cb->draw(4, insts.size());
+            delete m_srb;
+            m_srb = r->newShaderResourceBindings();
+            m_srb->setBindings({
+                QRhiShaderResourceBinding::uniformBuffer(0, QRhiShaderResourceBinding::VertexStage, m_ubuf),
+                QRhiShaderResourceBinding::sampledTexture(1, QRhiShaderResourceBinding::FragmentStage, fl->atlasTexture(i), m_sampler)
+            });
+            m_srb->create();
+            cb->setShaderResources(m_srb);
+            cb->draw(4, insts.size());
+        }
     }
 
     cb->endPass();

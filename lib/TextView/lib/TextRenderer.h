@@ -5,7 +5,6 @@
 #include <QVector4D>
 #include <QtGui/6.9.1/QtGui/rhi/qrhi.h>
 #include <QSizeF>
-#include "DFCache.h"
 #include "TextFramebuffer.h"
 #include "FontLoader.h"
 
@@ -51,6 +50,4 @@ private:
     QRhiGraphicsPipeline *m_pipe = nullptr;
     QRhiShaderResourceBindings *m_srb = nullptr;
     QRhiSampler *m_sampler = nullptr;
-
-    DFCache m_cache;
 };

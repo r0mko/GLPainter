@@ -1,2 +1,1 @@
-add_subdirectory(TextViewCore)
-add_subdirectory(TextViewQml)
+add_subdirectory(TextView)

@@ -24,7 +24,7 @@ target_link_libraries(GLPainterTests PRIVATE
 )
 
 target_include_directories(GLPainterTests PRIVATE
-    ${CMAKE_SOURCE_DIR}/lib/TextViewCore
+    ${CMAKE_SOURCE_DIR}/lib/TextView/lib
 )
 
 include(GoogleTest)

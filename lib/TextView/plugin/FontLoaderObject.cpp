@@ -14,7 +14,7 @@ void FontLoaderObject::setFileName(const QString &fileName)
 {
     if (m_loader.fileName() == fileName)
         return;
-    m_loader.setFileName(fileName);
+    m_loader.loadFont(fileName);
     emit fileNameChanged();
     emit isValidChanged();
     emit familyNameChanged();
@@ -30,13 +30,6 @@ qreal FontLoaderObject::pixelSize() const
     return m_loader.pixelSize();
 }
 
-void FontLoaderObject::setPixelSize(qreal size)
-{
-    if (qFuzzyCompare(m_loader.pixelSize(), size))
-        return;
-    m_loader.setPixelSize(size);
-    emit pixelSizeChanged();
-}
 
 int FontLoaderObject::glyphIndex(QChar character) const
 {
