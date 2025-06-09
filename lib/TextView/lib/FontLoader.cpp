@@ -60,6 +60,11 @@ int FontLoader::glyphIndex(QChar character) const
     return m_font.glyphIndexesForString({character}).at(0);
 }
 
+QRectF FontLoader::boundingRect(int glyphIndex) const
+{
+    return m_font.boundingRect(glyphIndex);
+}
+
 QString FontLoader::familyName() const
 {
     return m_font.familyName();
