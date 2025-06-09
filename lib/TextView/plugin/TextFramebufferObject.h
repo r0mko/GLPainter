@@ -22,6 +22,9 @@ public:
 
     Q_PROPERTY(QFont font READ font WRITE setFont NOTIFY fontChanged)
 
+    QFont font() const;
+    void setFont(const QFont &font);
+
     Q_INVOKABLE void putText(int row, int column, const QString &text, const TextAttributes &attr);
     Q_INVOKABLE void writeLn(const QString &text, const TextAttributes &attr);
     Q_INVOKABLE void clear(const QRect &rect);

@@ -40,7 +40,7 @@ bool FontLoader::loadFont(const QString &fileName)
 
 bool FontLoader::setFont(const QFont &font)
 {
-    m_font = QRawFont::fromFont(font, QFont::PreferDefaultHinting);
+    m_font = QRawFont::fromFont(font);
     m_pixelSize = font.pixelSize();
     return m_font.isValid();
 }
