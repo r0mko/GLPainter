@@ -5,6 +5,7 @@ qt_add_executable(TextViewDemoApp
 find_package(Qt6 REQUIRED COMPONENTS Quick Qml)
 
 qt_add_qml_module(TextViewDemoApp
+    NO_PLUGIN
     URI TextViewDemoApp
     VERSION 1.0
     QML_FILES main.qml

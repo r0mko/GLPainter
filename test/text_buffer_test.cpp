@@ -1,6 +1,11 @@
 #include <gtest/gtest.h>
 #include "TextFramebuffer.h"
 
+using ui::textview::TextAttributes;
+using ui::textview::TextBlock;
+using ui::textview::TextFramebuffer;
+using ui::textview::TextLine;
+
 TEST(TextLineTest, UpdatesBounds) {
     TextLine line;
     TextAttributes attr(QColor(), QColor(), QColor(), 0.0f, nullptr);
